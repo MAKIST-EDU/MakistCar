@@ -15,6 +15,39 @@ void DC_Motor_Control::Speed(int Forward, int Reverse)
    ledcWrite(_Reverse_Pin, Reverse);
 }
 
+void MotorControl::motorControl(int pwmFreq, int pwmResolution)
+{
+   ledcAttach(L_MOTOR_FORWARD_PIN, pwmFreq, pwmResolution);
+   ledcAttach(L_MOTOR_REVERSE_PIN, pwmFreq, pwmResolution);
+   ledcAttach(R_MOTOR_FORWARD_PIN, pwmFreq, pwmResolution);
+   ledcAttach(R_MOTOR_REVERSE_PIN, pwmFreq, pwmResolution);
+}
+
+void MotorControl::setSpeed(int speed)
+{
+   if (speed < 0)
+   {
+      ledcWrite(L_MOTOR_FORWARD_PIN, 0);
+      ledcWrite(L_MOTOR_REVERSE_PIN, abs(speed));
+      ledcWrite(R_MOTOR_FORWARD_PIN, 0);
+      ledcWrite(R_MOTOR_REVERSE_PIN, abs(speed));
+   }
+   else if (speed > 0)
+   {
+      ledcWrite(L_MOTOR_FORWARD_PIN, speed);
+      ledcWrite(L_MOTOR_REVERSE_PIN, 0);
+      ledcWrite(R_MOTOR_FORWARD_PIN, speed);
+      ledcWrite(R_MOTOR_REVERSE_PIN, 0);
+   }
+   else
+   {
+      ledcWrite(L_MOTOR_FORWARD_PIN, 0);
+      ledcWrite(L_MOTOR_REVERSE_PIN, 0);
+      ledcWrite(R_MOTOR_FORWARD_PIN, 0);
+      ledcWrite(R_MOTOR_REVERSE_PIN, 0);
+   }
+}
+
 void DC_Motor_Control::Stop_N()
 {
    Speed(0, 0);

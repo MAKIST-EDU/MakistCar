@@ -22,6 +22,15 @@
 #define IR3_PIN 39
 #define IR4_PIN 36
 #endif
+
+class MotorControl
+{
+private:
+public:
+   void motorControl(int pwmFreq = 5000, int pwmResolution = 8);
+   void setSpeed(int speed);
+};
+
 class DC_Motor_Control
 {
 private:
