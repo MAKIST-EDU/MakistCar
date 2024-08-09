@@ -42,6 +42,8 @@ private:
 
 public:
    void pinInit(int pwmFreq = 5000, int pwmResolution = 8);
+   void ledOn();
+   void ledOff();
    void speed(int pwm);
    void leftSpeed(int pwm);
    void rightSpeed(int pwm);

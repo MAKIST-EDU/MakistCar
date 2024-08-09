@@ -170,3 +170,14 @@ int MakistCar::irCheck(int reference)
                (IR4 < reference ? 1 : 0);
    return state;
 }
+
+void MakistCar::ledOn()
+{
+   digitalWrite(RIGHT_LED_PIN, HIGH);
+   digitalWrite(LEFT_LED_PIN, HIGH);
+}
+void MakistCar::ledOff()
+{
+   digitalWrite(RIGHT_LED_PIN, LOW);
+   digitalWrite(LEFT_LED_PIN, LOW);
+}
