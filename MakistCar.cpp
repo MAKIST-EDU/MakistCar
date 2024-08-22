@@ -4,10 +4,10 @@
 // DC MOTOR CONTROL
 void MakistCar::pinInit(int pwmFreq, int pwmResolution)
 {
-   ledcAttach(L_MOTOR_FORWARD_PIN, pwmFreq, pwmResolution);
-   ledcAttach(L_MOTOR_REVERSE_PIN, pwmFreq, pwmResolution);
-   ledcAttach(R_MOTOR_FORWARD_PIN, pwmFreq, pwmResolution);
-   ledcAttach(R_MOTOR_REVERSE_PIN, pwmFreq, pwmResolution);
+   ledcAttach(L_MOTOR_A_PIN, pwmFreq, pwmResolution);
+   ledcAttach(L_MOTOR_B_PIN, pwmFreq, pwmResolution);
+   ledcAttach(R_MOTOR_A_PIN, pwmFreq, pwmResolution);
+   ledcAttach(R_MOTOR_B_PIN, pwmFreq, pwmResolution);
 
    servo.attach(SERVO_PIN);
 
@@ -23,67 +23,87 @@ void MakistCar::pinInit(int pwmFreq, int pwmResolution)
    pinMode(LEFT_LED_PIN, OUTPUT);
 }
 
+void MakistCar::direction()
+{
+   motorDir = motorDir * -1;
+}
 // DC MOTOR CONTROL
-void MakistCar::speed(int pwm)
+void MakistCar::speed(int speed)
 {
-   if (pwm < 0)
+   speed = constrain(speed, -100, 100);
+   float m = (maxSpeed - minSpeed) / 100.0;
+   float b = minSpeed;
+   int pwm = m * abs(speed) + b;
+
+   if (speed * motorDir < 0)
    {
-      ledcWrite(L_MOTOR_FORWARD_PIN, 0);
-      ledcWrite(L_MOTOR_REVERSE_PIN, abs(pwm));
-      ledcWrite(R_MOTOR_FORWARD_PIN, 0);
-      ledcWrite(R_MOTOR_REVERSE_PIN, abs(pwm));
+      ledcWrite(L_MOTOR_A_PIN, pwm);
+      ledcWrite(L_MOTOR_B_PIN, 0);
+      ledcWrite(R_MOTOR_A_PIN, pwm);
+      ledcWrite(R_MOTOR_B_PIN, 0);
    }
-   else if (pwm > 0)
+   else if (speed * motorDir > 0)
    {
-      ledcWrite(L_MOTOR_FORWARD_PIN, pwm);
-      ledcWrite(L_MOTOR_REVERSE_PIN, 0);
-      ledcWrite(R_MOTOR_FORWARD_PIN, pwm);
-      ledcWrite(R_MOTOR_REVERSE_PIN, 0);
+      ledcWrite(L_MOTOR_A_PIN, 0);
+      ledcWrite(L_MOTOR_B_PIN, pwm);
+      ledcWrite(R_MOTOR_A_PIN, 0);
+      ledcWrite(R_MOTOR_B_PIN, pwm);
    }
    else
    {
-      ledcWrite(L_MOTOR_FORWARD_PIN, 0);
-      ledcWrite(L_MOTOR_REVERSE_PIN, 0);
-      ledcWrite(R_MOTOR_FORWARD_PIN, 0);
-      ledcWrite(R_MOTOR_REVERSE_PIN, 0);
+      ledcWrite(L_MOTOR_A_PIN, 0);
+      ledcWrite(L_MOTOR_B_PIN, 0);
+      ledcWrite(R_MOTOR_A_PIN, 0);
+      ledcWrite(R_MOTOR_B_PIN, 0);
    }
 }
 
-void MakistCar::leftSpeed(int pwm)
+void MakistCar::leftSpeed(int speed)
 {
-   if (pwm < 0)
+   speed = constrain(speed, -100, 100);
+   float m = (maxSpeed - minSpeed) / 100.0;
+   float b = minSpeed;
+   int pwm = m * abs(speed) + b;
+
+   if (speed * motorDir < 0)
    {
-      ledcWrite(L_MOTOR_FORWARD_PIN, 0);
-      ledcWrite(L_MOTOR_REVERSE_PIN, abs(pwm));
+      ledcWrite(L_MOTOR_A_PIN, pwm);
+      ledcWrite(L_MOTOR_B_PIN, 0);
    }
-   else if (pwm > 0)
+   else if (speed * motorDir > 0)
    {
-      ledcWrite(L_MOTOR_FORWARD_PIN, pwm);
-      ledcWrite(L_MOTOR_REVERSE_PIN, 0);
+      ledcWrite(L_MOTOR_A_PIN, 0);
+      ledcWrite(L_MOTOR_B_PIN, pwm);
    }
    else
    {
-      ledcWrite(L_MOTOR_FORWARD_PIN, 0);
-      ledcWrite(L_MOTOR_REVERSE_PIN, 0);
+      ledcWrite(L_MOTOR_A_PIN, 0);
+      ledcWrite(L_MOTOR_B_PIN, 0);
    }
 }
 
-void MakistCar::rightSpeed(int pwm)
+void MakistCar::rightSpeed(int speed)
 {
-   if (pwm < 0)
+   speed = constrain(speed, -100, 100);
+   float m = (maxSpeed - minSpeed) / 100.0;
+   float b = minSpeed;
+   int pwm = m * abs(speed) + b;
+
+   if (speed * motorDir < 0)
    {
-      ledcWrite(R_MOTOR_FORWARD_PIN, 0);
-      ledcWrite(R_MOTOR_REVERSE_PIN, abs(pwm));
+      ledcWrite(R_MOTOR_A_PIN, pwm);
+      ledcWrite(R_MOTOR_B_PIN, 0);
    }
-   else if (pwm > 0)
+   else if (speed * motorDir > 0)
    {
-      ledcWrite(R_MOTOR_FORWARD_PIN, pwm);
-      ledcWrite(R_MOTOR_REVERSE_PIN, 0);
+
+      ledcWrite(R_MOTOR_A_PIN, 0);
+      ledcWrite(R_MOTOR_B_PIN, pwm);
    }
    else
    {
-      ledcWrite(R_MOTOR_FORWARD_PIN, 0);
-      ledcWrite(R_MOTOR_REVERSE_PIN, 0);
+      ledcWrite(R_MOTOR_A_PIN, 0);
+      ledcWrite(R_MOTOR_B_PIN, 0);
    }
 }
 // SERVO MOTOR CONTROL
@@ -156,19 +176,36 @@ void MakistCar::setMaxDistance(unsigned int max_cm_distance)
    maxEchoTime = min(max_cm_distance + 1, (unsigned int)MAX_SENSOR_DISTANCE + 1) * US_ROUNDTRIP_CM;
 }
 
+void MakistCar::irInit(int _irPinSet)
+{
+   irPinSet = _irPinSet;
+}
+
 // IR SENSOR CONTROL
 int MakistCar::irCheck(int reference)
 {
-   int IR1 = analogRead(IR1_PIN);
-   int IR2 = analogRead(IR2_PIN);
-   int IR3 = analogRead(IR3_PIN);
-   int IR4 = analogRead(IR4_PIN);
+   if (irPinSet == 2)
+   {
+      int IR1 = analogRead(IR1_PIN);
+      int IR4 = analogRead(IR4_PIN);
 
-   int state = (IR1 < reference ? 1 : 0) << 3 |
-               (IR2 < reference ? 1 : 0) << 2 |
-               (IR3 < reference ? 1 : 0) << 1 |
-               (IR4 < reference ? 1 : 0);
-   return state;
+      int state = (IR4 < reference ? 1 : 0) << 1 |
+                  (IR1 < reference ? 1 : 0);
+      return state;
+   }
+   else
+   {
+      int IR1 = analogRead(IR1_PIN);
+      int IR2 = analogRead(IR2_PIN);
+      int IR3 = analogRead(IR3_PIN);
+      int IR4 = analogRead(IR4_PIN);
+
+      int state = (IR4 < reference ? 1 : 0) << 3 |
+                  (IR3 < reference ? 1 : 0) << 2 |
+                  (IR2 < reference ? 1 : 0) << 1 |
+                  (IR1 < reference ? 1 : 0);
+      return state;
+   }
 }
 
 void MakistCar::ledOn()

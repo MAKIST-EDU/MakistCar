@@ -4,10 +4,10 @@
 #ifdef NOT_MAKIST_CAR_KIT
 #else
 #define SERVO_PIN 16
-#define L_MOTOR_FORWARD_PIN 2
-#define L_MOTOR_REVERSE_PIN 4
-#define R_MOTOR_FORWARD_PIN 13
-#define R_MOTOR_REVERSE_PIN 27
+#define L_MOTOR_A_PIN 2
+#define L_MOTOR_B_PIN 4
+#define R_MOTOR_A_PIN 13
+#define R_MOTOR_B_PIN 27
 
 #define TRIG_PIN 32
 #define ECHO_PIN 23
@@ -36,17 +36,22 @@ class MakistCar
 private:
    int centerAngle = 90;
    int maxAngle = 35;
+   int irPinSet = 2;
    Servo servo;
    unsigned int maxEchoTime;
    unsigned long maxTime;
+   int minSpeed = 60;
+   int maxSpeed = 255;
+   int motorDir = 1;
 
 public:
    void pinInit(int pwmFreq = 5000, int pwmResolution = 8);
    void ledOn();
    void ledOff();
-   void speed(int pwm);
-   void leftSpeed(int pwm);
-   void rightSpeed(int pwm);
+   void direction();
+   void speed(int speed);
+   void leftSpeed(int speed);
+   void rightSpeed(int speed);
    void servoWrite(int value);
    void servoAngle(int value);
    void handleOffset(int _centerAngle, int _maxAngle);
@@ -54,6 +59,7 @@ public:
    unsigned int getMM(); // Return distance value in 'mm'
    void setMaxDistance(unsigned int max_cm_distance);
    boolean pingTrigger();
+   void irInit(int _irPinSet);
    int irCheck(int reference = 500); // Return IR State
 };
 #endif

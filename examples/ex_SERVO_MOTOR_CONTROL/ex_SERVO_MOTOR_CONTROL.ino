@@ -42,7 +42,7 @@ void loop()
    myCar.handle('L');
    delay(1000);
 
-   myCar.handleOffset(100, 10);
+   myCar.handleOffset(100, 20);
    myCar.handle('C');
    delay(1000);
    myCar.handle('R');

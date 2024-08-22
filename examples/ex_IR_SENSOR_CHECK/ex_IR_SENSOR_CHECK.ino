@@ -38,6 +38,7 @@ void setup()
 {
    Serial.begin(115200);
    myCar.pinInit();
+   void irInit(4); // ir 4개 사용 기본 두개
 }
 
 void loop()

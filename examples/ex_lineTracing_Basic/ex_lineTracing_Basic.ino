@@ -20,6 +20,7 @@ void setup()
 {
   Serial.begin(115200);
   myCar.pinInit();
+  void irInit(4);
 }
 
 void loop()
