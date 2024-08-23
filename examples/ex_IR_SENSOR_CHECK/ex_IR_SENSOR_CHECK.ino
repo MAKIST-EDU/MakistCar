@@ -2,20 +2,12 @@
    [EDU CAR Shield Rev 5.0] IR Sensor Check Example
       - Created by MAKIST (SEOKMIN KANG)
       - Created Date : 2024.05.26
-      - Last Update : 2024.05.26
-
-   ================================= [Caution] =================================
-       Add library before using the ultrasonic sensor (see usage below)
-         1. Open Library Manager
-         2. Search for 'NewPing'
-         3. Install 'NewPing by Tim Eckel'
-            - No need to include the library manually.
-   =============================================================================
+      - Last Update : 2024.08.23
 
 
    IR_SENSOR_CONTROL.IR_Check() - return value table
    ================================================================================
-   * IR Sensor Check Value (White = 0 , black = 1)
+   * IR Sensor Check Value (White = 1 , black = 0)
    --------------------------------------------------------------------------------
    Sensor      IR1         IR2         IR3         IR4         return value
    Position    Right Out   Right In    Left In     Left Out
@@ -40,24 +32,24 @@
 
 #include <MakistCar.h>
 
-const int IR1 = 36; //Right out
-const int IR2 = 39; //Right in
-const int IR3 = 34; //left in
-const int IR4 = 35; //leftout
-const int reference = 500; // IR sensor line reference value (values below this are considered as line)
+MakistCar myCar;
 
-IR_SENSOR_CONTROL irState(36, 39, 34, 35, reference); // (ir1 pin, ir2 pin, ir3 pin, ir4 pin, line reference value)
-
-void setup() {
+void setup()
+{
    Serial.begin(115200);
+   myCar.pinInit();
 }
 
-void loop() {
-   int ir_value = irState.IR_Check();
+void loop()
+{
+   int irValue = myCar.irCheck(); // Check the 4 IR sensors. IR1,IR2,IR3,IR4
+   // int irValue = myCar.irSideCheck(); // Check the 2 IR sensors. IR1,IR4
+   // int irValue = myCar.irMidCheck(); //Check the 2 IR sensors. IR2,IR3
 
-   if(Serial){
+   if (Serial)
+   {
       Serial.print("IR STATE : ");
-      Serial.println(ir_value); // Output IR sensor measurement value from 0 to 15
+      Serial.println(irValue); // Output IR sensor measurement value from 0 to 4 or 0 to 15
    }
    delay(100);
 }

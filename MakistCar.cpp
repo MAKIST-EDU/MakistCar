@@ -2,89 +2,223 @@
 #include "MakistCar.h"
 
 // DC MOTOR CONTROL
-DC_Motor_Control::DC_Motor_Control(int Forward_Pin, int Reverse_Pin, int Forward_Channel, int Reverse_Channel, int pwmFreq, int pwmResolution)
-   : _Forward_Pin(Forward_Pin), _Reverse_Pin(Reverse_Pin), _Forward_Channel(Forward_Channel), _Reverse_Channel(Reverse_Channel) {
+void MakistCar::pinInit(int pwmFreq, int pwmResolution)
+{
+   ledcAttach(L_MOTOR_A_PIN, pwmFreq, pwmResolution);
+   ledcAttach(L_MOTOR_B_PIN, pwmFreq, pwmResolution);
+   ledcAttach(R_MOTOR_A_PIN, pwmFreq, pwmResolution);
+   ledcAttach(R_MOTOR_B_PIN, pwmFreq, pwmResolution);
 
-   ledcSetup(_Forward_Channel, pwmFreq, pwmResolution);
-   ledcSetup(_Reverse_Channel, pwmFreq, pwmResolution);
-   ledcAttachPin(_Forward_Pin, _Forward_Channel);
-   ledcAttachPin(_Reverse_Pin, _Reverse_Channel);
+   servo.attach(SERVO_PIN);
+
+   pinMode(IR1_PIN, INPUT);
+   pinMode(IR2_PIN, INPUT);
+   pinMode(IR3_PIN, INPUT);
+   pinMode(IR4_PIN, INPUT);
+
+   pinMode(TRIG_PIN, OUTPUT);
+   pinMode(ECHO_PIN, INPUT);
+
+   pinMode(RIGHT_LED_PIN, OUTPUT);
+   pinMode(LEFT_LED_PIN, OUTPUT);
 }
 
-void DC_Motor_Control::Speed(int Forward, int Reverse) {
-   ledcWrite(_Forward_Channel, Forward);
-   ledcWrite(_Reverse_Channel, Reverse);
+void MakistCar::direction()
+{
+   motorDir = motorDir * -1;
+}
+// DC MOTOR CONTROL
+void MakistCar::speed(int speed)
+{
+   speed = constrain(speed, -100, 100);
+   float m = (maxSpeed - minSpeed) / 100.0;
+   float b = minSpeed;
+   int pwm = m * abs(speed) + b;
+
+   if (speed * motorDir < 0)
+   {
+      ledcWrite(L_MOTOR_A_PIN, pwm);
+      ledcWrite(L_MOTOR_B_PIN, 0);
+      ledcWrite(R_MOTOR_A_PIN, pwm);
+      ledcWrite(R_MOTOR_B_PIN, 0);
+   }
+   else if (speed * motorDir > 0)
+   {
+      ledcWrite(L_MOTOR_A_PIN, 0);
+      ledcWrite(L_MOTOR_B_PIN, pwm);
+      ledcWrite(R_MOTOR_A_PIN, 0);
+      ledcWrite(R_MOTOR_B_PIN, pwm);
+   }
+   else
+   {
+      ledcWrite(L_MOTOR_A_PIN, 0);
+      ledcWrite(L_MOTOR_B_PIN, 0);
+      ledcWrite(R_MOTOR_A_PIN, 0);
+      ledcWrite(R_MOTOR_B_PIN, 0);
+   }
 }
 
-void DC_Motor_Control::Stop_N() {
-   Speed(0, 0);
+void MakistCar::leftSpeed(int speed)
+{
+   speed = constrain(speed, -100, 100);
+   float m = (maxSpeed - minSpeed) / 100.0;
+   float b = minSpeed;
+   int pwm = m * abs(speed) + b;
+
+   if (speed * motorDir < 0)
+   {
+      ledcWrite(L_MOTOR_A_PIN, pwm);
+      ledcWrite(L_MOTOR_B_PIN, 0);
+   }
+   else if (speed * motorDir > 0)
+   {
+      ledcWrite(L_MOTOR_A_PIN, 0);
+      ledcWrite(L_MOTOR_B_PIN, pwm);
+   }
+   else
+   {
+      ledcWrite(L_MOTOR_A_PIN, 0);
+      ledcWrite(L_MOTOR_B_PIN, 0);
+   }
 }
 
-void DC_Motor_Control::Stop_B() {
-   Speed(200, 200);
+void MakistCar::rightSpeed(int speed)
+{
+   speed = constrain(speed, -100, 100);
+   float m = (maxSpeed - minSpeed) / 100.0;
+   float b = minSpeed;
+   int pwm = m * abs(speed) + b;
+
+   if (speed * motorDir < 0)
+   {
+      ledcWrite(R_MOTOR_A_PIN, pwm);
+      ledcWrite(R_MOTOR_B_PIN, 0);
+   }
+   else if (speed * motorDir > 0)
+   {
+
+      ledcWrite(R_MOTOR_A_PIN, 0);
+      ledcWrite(R_MOTOR_B_PIN, pwm);
+   }
+   else
+   {
+      ledcWrite(R_MOTOR_A_PIN, 0);
+      ledcWrite(R_MOTOR_B_PIN, 0);
+   }
 }
-
-
-
 // SERVO MOTOR CONTROL
-SERVO_MOTOR_CONTROL::SERVO_MOTOR_CONTROL(int Servo_Pin, int Center_Angle, int Max_Angle)
-   : _Servo_Pin(Servo_Pin), _Center_Angle(Center_Angle), _Max_Angle(Max_Angle) {
-
-   _servo.attach(_Servo_Pin);
+void MakistCar::servoWrite(int value)
+{
+   if (value < 180 && value > 0)
+      servo.write(value);
 }
 
-void SERVO_MOTOR_CONTROL::write(int value) {
-   if(value < 180 && value > 0) _servo.write(value);
+void MakistCar::servoAngle(int value)
+{
+   if (value < 180 && value > 0)
+      servo.write(value);
 }
 
-void SERVO_MOTOR_CONTROL::Angle(int value) {
-   if(value < 180 && value > 0) _servo.write(value);
+void MakistCar::handleOffset(int _centerAngle, int _maxAngle)
+{
+   centerAngle = _centerAngle;
+   maxAngle = _maxAngle;
 }
 
-void SERVO_MOTOR_CONTROL::Handle(char value) {
-   if(value == 'C') _servo.write(_Center_Angle);
-   else if(value == 'R') _servo.write(_Center_Angle + _Max_Angle);
-   else if(value == 'L') _servo.write(_Center_Angle - _Max_Angle);
+void MakistCar::handle(char value)
+{
+   if (value == 'C')
+      servo.write(centerAngle);
+   else if (value == 'R')
+      servo.write(centerAngle + maxAngle);
+   else if (value == 'L')
+      servo.write(centerAngle - maxAngle);
 }
-
-
 
 // ULTRASONIC SENSOR CONTROL
-ULTRASONIC_CONTROL::ULTRASONIC_CONTROL(int TRIG_Pin, int ECHO_Pin, int maxDistance)
-   : _TRIG_Pin(TRIG_Pin), _ECHO_Pin(ECHO_Pin), _Ultrasonic(TRIG_Pin, ECHO_Pin, maxDistance) {
-   
-   
-   pinMode(_TRIG_Pin, OUTPUT);
-   pinMode(_ECHO_Pin, INPUT);
+unsigned int MakistCar::getMM()
+{
+   setMaxDistance(MAX_DISTANCE);
+
+   if (!pingTrigger())
+      return NO_ECHO;
+
+   while (digitalRead(ECHO_PIN))
+      if (micros() > maxTime)
+         return NO_ECHO;
+
+   return (micros() - (maxTime - maxEchoTime) - PING_OVERHEAD);
 }
 
-unsigned int ULTRASONIC_CONTROL::getMM() {
-   unsigned int us = _Ultrasonic.ping();
-   return (us * 10) / 58.0;
+boolean MakistCar::pingTrigger()
+{
+
+   digitalWrite(TRIG_PIN, LOW); // 안정화 대기
+   delayMicroseconds(2);
+   digitalWrite(TRIG_PIN, HIGH);
+   delayMicroseconds(10);
+   digitalWrite(TRIG_PIN, LOW);
+
+   if (digitalRead(ECHO_PIN))
+      return false;                                     // Previous ping hasn't finished, abort.
+   maxTime = micros() + maxEchoTime + MAX_SENSOR_DELAY; // Maximum time we'll wait for ping to start (most sensors are <450uS, the SRF06 can take up to 34,300uS!)
+
+   while (!digitalRead(ECHO_PIN)) // Wait for ping to start.
+      if (micros() > maxTime)
+         return false; // Took too long to start, abort.
+
+   maxTime = micros() + maxEchoTime; // Ping started, set the time-out.
+   return true;                      // Ping started successfully.
 }
 
+void MakistCar::setMaxDistance(unsigned int max_cm_distance)
+{
+   maxEchoTime = min(max_cm_distance + 1, (unsigned int)MAX_SENSOR_DISTANCE + 1) * US_ROUNDTRIP_CM;
+}
 
 // IR SENSOR CONTROL
-IR_SENSOR_CONTROL::IR_SENSOR_CONTROL(int IR1_Pin, int IR2_Pin, int IR3_Pin, int IR4_Pin, int reference)
-   : _IR1_Pin(IR1_Pin), _IR2_Pin(IR2_Pin), _IR3_Pin(IR3_Pin), _IR4_Pin(IR4_Pin), _reference(reference) {
-   
-   pinMode(_IR1_Pin, INPUT);
-   pinMode(_IR2_Pin, INPUT);
-   pinMode(_IR3_Pin, INPUT);
-   pinMode(_IR4_Pin, INPUT);
-}
+int MakistCar::irSideCheck(int reference)
+{
 
-int IR_SENSOR_CONTROL::IR_Check() {
-   int IR1 = analogRead(_IR1_Pin);
-   int IR2 = analogRead(_IR2_Pin);
-   int IR3 = analogRead(_IR3_Pin);
-   int IR4 = analogRead(_IR4_Pin);
+   int IR1 = analogRead(IR1_PIN);
+   int IR4 = analogRead(IR4_PIN);
 
-   int state = (IR1 < _reference ? 1 : 0) << 3 |
-               (IR2 < _reference ? 1 : 0) << 2 |
-               (IR3 < _reference ? 1 : 0) << 1 |
-               (IR4 < _reference ? 1 : 0);
+   int state = (IR4 < reference ? 1 : 0) << 1 |
+               (IR1 < reference ? 1 : 0);
    return state;
 }
 
+int MakistCar::irMidCheck(int reference)
+{
+   int IR2 = analogRead(IR2_PIN);
+   int IR3 = analogRead(IR3_PIN);
 
+   int state = (IR3 < reference ? 1 : 0) << 1 |
+               (IR2 < reference ? 1 : 0);
+   return state;
+}
+
+int MakistCar::irCheck(int reference)
+{
+   int IR1 = analogRead(IR1_PIN);
+   int IR2 = analogRead(IR2_PIN);
+   int IR3 = analogRead(IR3_PIN);
+   int IR4 = analogRead(IR4_PIN);
+
+   int state = (IR4 < reference ? 1 : 0) << 3 |
+               (IR3 < reference ? 1 : 0) << 2 |
+               (IR2 < reference ? 1 : 0) << 1 |
+               (IR1 < reference ? 1 : 0);
+   return state;
+}
+
+void MakistCar::ledOn()
+{
+   digitalWrite(RIGHT_LED_PIN, HIGH);
+   digitalWrite(LEFT_LED_PIN, HIGH);
+}
+void MakistCar::ledOff()
+{
+   digitalWrite(RIGHT_LED_PIN, LOW);
+   digitalWrite(LEFT_LED_PIN, LOW);
+}
