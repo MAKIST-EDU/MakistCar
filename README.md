@@ -23,8 +23,9 @@ This library is for simple control of makist car.
 <li>getMM()</li>
 <li>setMaxDistance(unsigned int max_cm_distance)</li>
 <li>pingTrigger()</li>
-<li>void irInit(int _irPinSet)</li>
 <li>int irCheck(int reference = 500)</li>
+<li>int irSideCheck(int reference = 500)</li>
+<li>int irMidCheck(int reference = 500)</li>
 </ul>
  * Please refer to the manual for a detailed explanation of the function.  
    
