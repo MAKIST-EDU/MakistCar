@@ -3,8 +3,11 @@ This library is for simple control of makist car.
 
 <h2>Installation</h2>
 1. In the Arduino IDE, navigate to Sketch > Include Library > Manage Libraries
+</br>
 2. Then the Library Manager will open and you will find a list of libraries that are already installed or ready for installation.
+</br>
 3. Then search for MAKISTCAR using the search bar.
+</br>
 4. Click on the text area and then select the specific version and install it.
 
 <h2>Functions</h2>
