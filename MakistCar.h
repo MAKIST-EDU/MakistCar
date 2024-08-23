@@ -28,7 +28,6 @@
 #define PING_OVERHEAD 1
 
 #include "Arduino.h"
-#include <NewPing.h>
 #include <ESP32Servo.h>
 
 class MakistCar
