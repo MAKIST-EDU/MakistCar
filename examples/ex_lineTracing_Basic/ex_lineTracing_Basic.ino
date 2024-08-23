@@ -20,7 +20,6 @@ void setup()
 {
   Serial.begin(115200);
   myCar.pinInit();
-  void irInit(4);
 }
 
 void loop()
@@ -33,8 +32,8 @@ void loop()
     myCar.handle('C');
     myCar.speed(200); // Motor Speed Control : object(PWM)
     break;
-  case 1: // 0001 : Right edge line detected
-    myCar.handle('L');
+  case 1: // 0001 : Left edge line detected
+    myCar.handle('R');
     myCar.speed(100);
     break;
   case 2: // 0010
@@ -49,8 +48,8 @@ void loop()
     break;
   case 7: // 0111
     break;
-  case 8: // 1000 : Left edge line detected
-    myCar.handle('R');
+  case 8: // 1000 : Right edge line detected
+    myCar.handle('L');
     myCar.speed(100);
     break;
   case 9: // 1001
