@@ -176,36 +176,40 @@ void MakistCar::setMaxDistance(unsigned int max_cm_distance)
    maxEchoTime = min(max_cm_distance + 1, (unsigned int)MAX_SENSOR_DISTANCE + 1) * US_ROUNDTRIP_CM;
 }
 
-void MakistCar::irInit(int _irPinSet)
+// IR SENSOR CONTROL
+int MakistCar::irSideCheck(int reference)
 {
-   irPinSet = _irPinSet;
+
+   int IR1 = analogRead(IR1_PIN);
+   int IR4 = analogRead(IR4_PIN);
+
+   int state = (IR4 < reference ? 1 : 0) << 1 |
+               (IR1 < reference ? 1 : 0);
+   return state;
 }
 
-// IR SENSOR CONTROL
+int MakistCar::irMidCheck(int reference)
+{
+   int IR2 = analogRead(IR2_PIN);
+   int IR3 = analogRead(IR3_PIN);
+
+   int state = (IR3 < reference ? 1 : 0) << 1 |
+               (IR2 < reference ? 1 : 0);
+   return state;
+}
+
 int MakistCar::irCheck(int reference)
 {
-   if (irPinSet == 2)
-   {
-      int IR1 = analogRead(IR1_PIN);
-      int IR4 = analogRead(IR4_PIN);
+   int IR1 = analogRead(IR1_PIN);
+   int IR2 = analogRead(IR2_PIN);
+   int IR3 = analogRead(IR3_PIN);
+   int IR4 = analogRead(IR4_PIN);
 
-      int state = (IR4 < reference ? 1 : 0) << 1 |
-                  (IR1 < reference ? 1 : 0);
-      return state;
-   }
-   else
-   {
-      int IR1 = analogRead(IR1_PIN);
-      int IR2 = analogRead(IR2_PIN);
-      int IR3 = analogRead(IR3_PIN);
-      int IR4 = analogRead(IR4_PIN);
-
-      int state = (IR4 < reference ? 1 : 0) << 3 |
-                  (IR3 < reference ? 1 : 0) << 2 |
-                  (IR2 < reference ? 1 : 0) << 1 |
-                  (IR1 < reference ? 1 : 0);
-      return state;
-   }
+   int state = (IR4 < reference ? 1 : 0) << 3 |
+               (IR3 < reference ? 1 : 0) << 2 |
+               (IR2 < reference ? 1 : 0) << 1 |
+               (IR1 < reference ? 1 : 0);
+   return state;
 }
 
 void MakistCar::ledOn()

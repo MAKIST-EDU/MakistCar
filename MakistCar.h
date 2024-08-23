@@ -36,11 +36,10 @@ class MakistCar
 private:
    int centerAngle = 90;
    int maxAngle = 35;
-   int irPinSet = 2;
    Servo servo;
    unsigned int maxEchoTime;
    unsigned long maxTime;
-   int minSpeed = 60;
+   int minSpeed = 70;
    int maxSpeed = 255;
    int motorDir = 1;
 
@@ -48,7 +47,7 @@ public:
    void pinInit(int pwmFreq = 5000, int pwmResolution = 8);
    void ledOn();
    void ledOff();
-   void direction();
+   void direction(); // Motor direction control
    void speed(int speed);
    void leftSpeed(int speed);
    void rightSpeed(int speed);
@@ -59,7 +58,8 @@ public:
    unsigned int getMM(); // Return distance value in 'mm'
    void setMaxDistance(unsigned int max_cm_distance);
    boolean pingTrigger();
-   void irInit(int _irPinSet);
    int irCheck(int reference = 500); // Return IR State
+   int irSideCheck(int reference = 500);
+   int irMidCheck(int reference = 500);
 };
 #endif
