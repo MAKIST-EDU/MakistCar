@@ -14,13 +14,22 @@
 
 MakistCar myCar;
 
-void setup() {
+void setup()
+{
   myCar.pinInit();
 }
 
-void loop() {
+void loop()
+{
   myCar.ledOn();
   delay(1000);
   myCar.ledOff();
+  delay(1000);
+  myCar.leftLed(100);
+  delay(1000);
+  myCar.rightLed(100);
+  delay(1000);
+  myCar.leftLed(0);
+  myCar.rightLed(0);
   delay(1000);
 }

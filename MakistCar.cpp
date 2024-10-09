@@ -19,8 +19,8 @@ void MakistCar::pinInit(int pwmFreq, int pwmResolution)
    pinMode(TRIG_PIN, OUTPUT);
    pinMode(ECHO_PIN, INPUT);
 
-   pinMode(RIGHT_LED_PIN, OUTPUT);
-   pinMode(LEFT_LED_PIN, OUTPUT);
+   ledcAttach(RIGHT_LED_PIN, pwmFreq, pwmResolution);
+   ledcAttach(LEFT_LED_PIN, pwmFreq, pwmResolution);
 }
 
 void MakistCar::direction()
@@ -136,7 +136,7 @@ void MakistCar::handle(char value)
 }
 
 // ULTRASONIC SENSOR CONTROL
-unsigned int MakistCar::getMM()
+int MakistCar::getCM()
 {
    setMaxDistance(MAX_DISTANCE);
 
@@ -147,16 +147,13 @@ unsigned int MakistCar::getMM()
       if (micros() > maxTime)
          return NO_ECHO;
 
-   return (micros() - (maxTime - maxEchoTime) - PING_OVERHEAD);
+   return (micros() - (maxTime - maxEchoTime) - PING_OVERHEAD) / US_ROUNDTRIP_CM;
 }
 
 boolean MakistCar::pingTrigger()
 {
-
-   digitalWrite(TRIG_PIN, LOW); // 안정화 대기
-   delayMicroseconds(2);
    digitalWrite(TRIG_PIN, HIGH);
-   delayMicroseconds(10);
+   delayMicroseconds(12);
    digitalWrite(TRIG_PIN, LOW);
 
    if (digitalRead(ECHO_PIN))
@@ -214,11 +211,19 @@ int MakistCar::irCheck(int reference)
 
 void MakistCar::ledOn()
 {
-   digitalWrite(RIGHT_LED_PIN, HIGH);
-   digitalWrite(LEFT_LED_PIN, HIGH);
+   ledcWrite(RIGHT_LED_PIN, 255);
+   ledcWrite(LEFT_LED_PIN, 255);
 }
 void MakistCar::ledOff()
 {
-   digitalWrite(RIGHT_LED_PIN, LOW);
-   digitalWrite(LEFT_LED_PIN, LOW);
+   ledcWrite(RIGHT_LED_PIN, 0);
+   ledcWrite(LEFT_LED_PIN, 0);
+}
+void MakistCar::leftLed(int pwm)
+{
+   ledcWrite(LEFT_LED_PIN, pwm);
+}
+void MakistCar::rightLed(int pwm)
+{
+   ledcWrite(RIGHT_LED_PIN, pwm);
 }
