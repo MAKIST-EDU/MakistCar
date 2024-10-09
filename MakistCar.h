@@ -46,6 +46,8 @@ public:
    void pinInit(int pwmFreq = 5000, int pwmResolution = 8);
    void ledOn();
    void ledOff();
+   void rightLed(int pwm);
+   void leftLed(int pwm);
    void direction(); // Motor direction control
    void speed(int speed);
    void leftSpeed(int speed);
@@ -54,11 +56,18 @@ public:
    void servoAngle(int value);
    void handleOffset(int _centerAngle, int _maxAngle);
    void handle(char value);
-   unsigned int getMM(); // Return distance value in 'mm'
+   int getCM(); // Return distance value in 'cm'
    void setMaxDistance(unsigned int max_cm_distance);
    boolean pingTrigger();
    int irCheck(int reference = 500); // Return IR State
    int irSideCheck(int reference = 500);
    int irMidCheck(int reference = 500);
+   int readY0();
+   int readY1();
+   int readY2();
+   int readY3();
+   int readY4();
+   int readY5();
+   int readY6();
 };
 #endif

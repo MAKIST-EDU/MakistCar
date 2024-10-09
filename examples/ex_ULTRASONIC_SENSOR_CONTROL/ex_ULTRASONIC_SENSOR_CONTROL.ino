@@ -17,16 +17,12 @@ void setup()
 
 void loop()
 {
-   unsigned int distanceMM = myCar.getMM();
-
-   if (distanceMM > 0)
+   int distanceCM = myCar.getCM();
+   if (Serial)
    {
-      if (Serial)
-      {
-         Serial.print("ULTRASONIC DISTANCE: ");
-         Serial.print(distanceMM);
-         Serial.println("mm");
-      }
+      Serial.print("ULTRASONIC DISTANCE: ");
+      Serial.print(distanceCM);
+      Serial.println("cm");
    }
    delay(50);
 }
